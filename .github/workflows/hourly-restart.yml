@@ -1,0 +1,30 @@
+name: Hourly Restart
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs at the top of every hour
+  workflow_dispatch:  # Allows manual triggering if needed
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Specify the Node.js version you are using
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Restart application
+        run: |
+          # Stop the running application if it's running
+          pkill -f 'node index.js' || true
+          
+          # Start the application
+          nohup node index.js > app.log 2>&1 &
